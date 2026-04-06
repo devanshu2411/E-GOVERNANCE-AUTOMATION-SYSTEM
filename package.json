@@ -1,0 +1,15 @@
+{
+  "name": "egov",
+  "version": "1.0.0",
+  "description": "> A full-stack web application for automating government service requests — built with Node.js, Express, MongoDB, and vanilla HTML/CSS/JS.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "mongodb": "^7.1.1"
+  }
+}

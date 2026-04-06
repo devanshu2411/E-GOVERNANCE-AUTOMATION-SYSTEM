@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard — E-Governance</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .layout { display: flex; min-height: 100vh; }
+
+    .sidebar {
+      width: 228px;
+      background: var(--navy3);
+      border-right: 1px solid var(--border);
+      display: flex; flex-direction: column;
+      position: fixed; top:0; left:0; bottom:0;
+      z-index: 100;
+    }
+
+    .sidebar-logo { padding: 22px 20px; border-bottom: 1px solid var(--border); }
+    .logo-mark { display:flex; align-items:center; gap:10px; }
+    .logo-icon { width:38px; height:38px; background:linear-gradient(135deg,var(--gold),var(--orange)); border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:19px; }
+    .logo-text h2 { font-size:13px; font-weight:800; line-height:1.2; }
+    .logo-text span { font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:.08em; font-family:'DM Sans',sans-serif; }
+
+    .nav { padding:14px 10px; flex:1; }
+    .nav-group-label { font-size:9.5px; text-transform:uppercase; letter-spacing:.12em; color:var(--muted); padding:0 10px; margin:10px 0 5px; }
+    .nav-item { display:flex; align-items:center; gap:10px; padding:9px 10px; border-radius:8px; font-size:13px; color:var(--muted); cursor:pointer; transition:all .18s; margin-bottom:2px; }
+    .nav-item:hover { background:var(--card); color:var(--white); }
+    .nav-item.active { background:rgba(245,200,66,0.1); color:var(--gold); }
+    .nav-item .nav-icon { font-size:16px; width:22px; text-align:center; }
+    .nav-badge { margin-left:auto; background:var(--orange); color:#fff; font-size:10px; padding:1px 7px; border-radius:20px; font-weight:600; }
+
+    .sidebar-bottom { padding:14px 20px; border-top:1px solid var(--border); }
+    .user-card { display:flex; align-items:center; gap:10px; }
+    .avatar { width:34px; height:34px; border-radius:50%; background:linear-gradient(135deg,var(--gold),var(--orange)); display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:700; color:#000; flex-shrink:0; }
+    .user-details p { font-size:13px; font-weight:500; }
+    .user-details span { font-size:10.5px; color:var(--muted); }
+
+    .main {
+      margin-left:228px;
+      padding:28px 32px;
+      flex:1;
+      background:
+        radial-gradient(ellipse 50% 35% at 85% 5%, rgba(245,200,66,0.05) 0%, transparent 55%),
+        var(--navy);
+    }
+
+    .topbar { display:flex; align-items:center; justify-content:space-between; margin-bottom:28px; }
+    .topbar h1 { font-size:22px; font-weight:800; }
+    .topbar p { font-size:12.5px; color:var(--muted); margin-top:2px; }
+
+    .page { display:none; animation:fadeUp .4s ease; }
+    .page.active { display:block; }
+
+    /* Stats grid */
+    .stats-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:24px; }
+    .stat-card { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:18px; }
+    .stat-val { font-family:'Syne',sans-serif; font-size:28px; font-weight:800; margin-bottom:4px; }
+    .stat-label { font-size:11.5px; color:var(--muted); }
+
+    .two-col { display:grid; grid-template-columns:1fr 320px; gap:18px; margin-bottom:18px; }
+
+    .table-wrapper { overflow-x:auto; border-radius:12px; border:1px solid var(--border); }
+    table { width:100%; border-collapse:collapse; }
+    thead th { text-align:left; font-size:10.5px; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); padding:12px 14px; background:rgba(255,255,255,0.02); border-bottom:1px solid var(--border); font-weight:500; }
+    tbody td { padding:11px 14px; font-size:13px; border-bottom:1px solid var(--border); }
+    tbody tr:last-child td { border-bottom:none; }
+    tbody tr:hover td { background:rgba(255,255,255,0.015); }
+
+    .section-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
+
+    .service-bar { margin-bottom:12px; }
+    .service-bar-label { display:flex; justify-content:space-between; font-size:12px; margin-bottom:5px; }
+    .service-bar-track { height:6px; background:rgba(255,255,255,0.07); border-radius:10px; overflow:hidden; }
+    .service-bar-fill { height:100%; border-radius:10px; background:linear-gradient(90deg,var(--blue),var(--cyan)); }
+  </style>
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-mark">
+        <div class="logo-icon">⚙️</div>
+        <div class="logo-text">
+          <h2>Admin Panel</h2>
+          <span>E-Governance System</span>
+        </div>
+      </div>
+    </div>
+    <nav class="nav">
+      <div class="nav-group-label">Overview</div>
+      <div class="nav-item active" onclick="showPage('dashboard',this)"><span class="nav-icon">📊</span> Dashboard</div>
+      <div class="nav-item" onclick="showPage('requests',this)"><span class="nav-icon">📋</span> All Requests <span class="nav-badge" id="pendingBadge">0</span></div>
+      <div class="nav-item" onclick="showPage('documents',this)"><span class="nav-icon">📁</span> Documents</div>
+      <div class="nav-item" onclick="showPage('citizens',this)"><span class="nav-icon">👥</span> Citizens</div>
+    </nav>
+    <div class="sidebar-bottom">
+      <div class="user-card">
+        <div class="avatar" id="adminAvatar">A</div>
+        <div class="user-details">
+          <p id="adminName">Admin</p>
+          <span id="adminEmail">—</span>
+        </div>
+      </div>
+      <button class="btn btn-outline" style="width:100%;justify-content:center;margin-top:10px;font-size:12px;padding:7px;" onclick="handleLogout()">🚪 Logout</button>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <div>
+        <h1 id="pageTitle">Admin Dashboard</h1>
+        <p id="pageDate"></p>
+      </div>
+      <div style="display:flex;gap:10px;">
+        <button class="btn btn-outline btn-sm" onclick="loadDashboard()">🔄 Refresh</button>
+      </div>
+    </div>
+
+    <!-- DASHBOARD PAGE -->
+    <div class="page active" id="page-dashboard">
+      <div class="stats-grid">
+        <div class="stat-card fade-up"><div style="font-size:22px;margin-bottom:10px">📥</div><div class="stat-val" id="sTotal">—</div><div class="stat-label">Total Requests</div></div>
+        <div class="stat-card fade-up" style="animation-delay:.07s"><div style="font-size:22px;margin-bottom:10px">⏳</div><div class="stat-val" id="sPending">—</div><div class="stat-label">Pending</div></div>
+        <div class="stat-card fade-up" style="animation-delay:.14s"><div style="font-size:22px;margin-bottom:10px">✅</div><div class="stat-val" id="sApproved">—</div><div class="stat-label">Approved</div></div>
+        <div class="stat-card fade-up" style="animation-delay:.21s"><div style="font-size:22px;margin-bottom:10px">🔍</div><div class="stat-val" id="sInReview">—</div><div class="stat-label">In Review</div></div>
+      </div>
+
+      <div class="two-col">
+        <div class="card fade-up" style="animation-delay:.28s">
+          <div class="card-header">
+            <div><div class="card-title">Recent Requests</div><div class="card-sub">Awaiting action</div></div>
+          </div>
+          <div class="table-wrapper">
+            <table>
+              <thead><tr><th>ID</th><th>Citizen</th><th>Service</th><th>Status</th><th>Date</th><th>Action</th></tr></thead>
+              <tbody id="adminReqBody"><tr><td colspan="6" style="text-align:center;color:var(--muted);padding:24px">Loading…</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="card fade-up" style="animation-delay:.33s;">
+          <div class="card-header"><div class="card-title">By Service Type</div></div>
+          <div id="serviceBreakdown"><p style="color:var(--muted);font-size:13px">Loading…</p></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- REQUESTS PAGE -->
+    <div class="page" id="page-requests">
+      <div class="section-header">
+        <div><div class="card-title">All Service Requests</div><div class="card-sub" id="reqCount">—</div></div>
+        <div style="display:flex;gap:10px;">
+          <select class="form-control" style="width:150px" id="adminFilterStatus" onchange="loadAllRequests()">
+            <option value="">All Status</option>
+            <option value="submitted">Submitted</option>
+            <option value="in_review">In Review</option>
+            <option value="approved">Approved</option>
+            <option value="rejected">Rejected</option>
+            <option value="closed">Closed</option>
+          </select>
+        </div>
+      </div>
+      <div class="table-wrapper">
+        <table>
+          <thead><tr><th>ID</th><th>Citizen</th><th>Service</th><th>Priority</th><th>Status</th><th>Date</th><th>Update Status</th></tr></thead>
+          <tbody id="allAdminReqBody"><tr><td colspan="7" style="text-align:center;color:var(--muted);padding:24px">Loading…</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- DOCUMENTS PAGE -->
+    <div class="page" id="page-documents">
+      <div class="section-header"><div class="card-title">All Uploaded Documents</div></div>
+      <div class="table-wrapper">
+        <table>
+          <thead><tr><th>Document</th><th>Type</th><th>Uploaded By</th><th>Request</th><th>Size</th><th>Status</th><th>Action</th></tr></thead>
+          <tbody id="adminDocBody"><tr><td colspan="7" style="text-align:center;color:var(--muted);padding:24px">Loading…</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- CITIZENS PAGE -->
+    <div class="page" id="page-citizens">
+      <div class="section-header">
+        <div class="card-title">Registered Citizens</div>
+        <input type="text" class="form-control" style="width:220px" placeholder="Search by name or email…" id="citizenSearch" oninput="loadCitizens()">
+      </div>
+      <div class="table-wrapper">
+        <table>
+          <thead><tr><th>Name</th><th>Email</th><th>Phone</th><th>Registered</th><th>Status</th><th>Action</th></tr></thead>
+          <tbody id="citizensBody"><tr><td colspan="6" style="text-align:center;color:var(--muted);padding:24px">Loading…</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Status Update Modal -->
+<div class="modal-backdrop" id="statusModal" onclick="closeOnBackdrop(event,'statusModal')">
+  <div class="modal" style="width:420px">
+    <div class="modal-header"><h2>Update Request Status</h2><p id="statusModalSub"></p></div>
+    <input type="hidden" id="updateReqId">
+    <div class="form-group">
+      <label>New Status</label>
+      <select class="form-control" id="newStatus">
+        <option value="submitted">Submitted</option>
+        <option value="in_review">In Review</option>
+        <option value="approved">Approved</option>
+        <option value="rejected">Rejected</option>
+        <option value="closed">Closed</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Officer Remarks (optional)</label>
+      <textarea class="form-control" id="officerRemarks" placeholder="Add notes for the citizen…"></textarea>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('statusModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="updateStatus()">Update Status</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script src="app.js"></script>
+<script>
+  requireAuth();
+  const user = Auth.getUser();
+  if (user?.role !== 'admin' && user?.role !== 'officer') {
+    showToast('Access denied. Admin only.', 'error');
+    setTimeout(() => window.location.href = 'portal.html', 1500);
+  }
+
+  document.getElementById('adminName').textContent  = user?.name || 'Admin';
+  document.getElementById('adminEmail').textContent = user?.email || '';
+  document.getElementById('adminAvatar').textContent = (user?.name || 'A')[0].toUpperCase();
+  document.getElementById('pageDate').textContent = new Date().toLocaleDateString('en-IN', { weekday:'long', day:'2-digit', month:'long', year:'numeric' });
+
+  function showPage(name, el) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    document.getElementById('page-' + name).classList.add('active');
+    if (el) el.classList.add('active');
+    const titles = { dashboard:'Admin Dashboard', requests:'All Requests', documents:'Documents', citizens:'Citizens' };
+    document.getElementById('pageTitle').textContent = titles[name] || name;
+    if (name === 'dashboard') loadDashboard();
+    if (name === 'requests')  loadAllRequests();
+    if (name === 'documents') loadAdminDocs();
+    if (name === 'citizens')  loadCitizens();
+  }
+
+  async function loadDashboard() {
+    try {
+      const [statsRes, reqRes] = await Promise.all([
+        apiRequest('/requests/stats'),
+        apiRequest('/requests?limit=8')
+      ]);
+      const s = statsRes.data;
+      document.getElementById('sTotal').textContent    = s.total;
+      document.getElementById('sPending').textContent  = s.pending;
+      document.getElementById('sApproved').textContent = s.approved;
+      document.getElementById('sInReview').textContent = s.inReview;
+      document.getElementById('pendingBadge').textContent = s.pending;
+
+      const reqs = reqRes.data || [];
+      document.getElementById('adminReqBody').innerHTML = reqs.map(r => `
+        <tr>
+          <td style="font-family:'Syne',sans-serif;font-size:12px;color:var(--cyan)">${r.requestId}</td>
+          <td>${r.citizen?.name || '—'}</td>
+          <td style="font-size:12px">${r.serviceType}</td>
+          <td>${statusBadge(r.status)}</td>
+          <td style="color:var(--muted);font-size:12px">${formatDate(r.createdAt)}</td>
+          <td><button class="btn btn-outline btn-sm" onclick="openStatusModal('${r._id}','${r.requestId}','${r.status}')">Update</button></td>
+        </tr>`).join('') || '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:24px">No requests</td></tr>';
+
+      // Service breakdown bars
+      const maxCount = Math.max(...(s.byService || []).map(x => x.count), 1);
+      document.getElementById('serviceBreakdown').innerHTML = (s.byService || []).slice(0,6).map(sv => `
+        <div class="service-bar">
+          <div class="service-bar-label"><span>${sv._id}</span><span style="color:var(--muted)">${sv.count}</span></div>
+          <div class="service-bar-track"><div class="service-bar-fill" style="width:${(sv.count/maxCount*100).toFixed(0)}%"></div></div>
+        </div>`).join('') || '<p style="color:var(--muted);font-size:13px">No data yet</p>';
+
+    } catch (err) {
+      showToast('Dashboard load error: ' + err.message, 'error');
+    }
+  }
+
+  async function loadAllRequests() {
+    const status = document.getElementById('adminFilterStatus')?.value || '';
+    try {
+      const qs = status ? `?status=${status}&limit=50` : '?limit=50';
+      const res = await apiRequest('/requests' + qs);
+      const reqs = res.data || [];
+      document.getElementById('reqCount').textContent = `${res.total} total requests`;
+      document.getElementById('allAdminReqBody').innerHTML = reqs.map(r => `
+        <tr>
+          <td style="font-family:'Syne',sans-serif;font-size:12px;color:var(--cyan)">${r.requestId}</td>
+          <td>${r.citizen?.name || '—'}<div style="font-size:11px;color:var(--muted)">${r.citizen?.email || ''}</div></td>
+          <td style="font-size:12px">${r.serviceType}</td>
+          <td>${priorityBadge(r.priority)}</td>
+          <td>${statusBadge(r.status)}</td>
+          <td style="color:var(--muted);font-size:12px">${formatDate(r.createdAt)}</td>
+          <td><button class="btn btn-outline btn-sm" onclick="openStatusModal('${r._id}','${r.requestId}','${r.status}')">Update</button></td>
+        </tr>`).join('') || '<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:24px">No requests found</td></tr>';
+    } catch (err) { showToast(err.message, 'error'); }
+  }
+
+  async function loadAdminDocs() {
+    try {
+      const res  = await apiRequest('/documents');
+      const docs = res.data || [];
+      document.getElementById('adminDocBody').innerHTML = docs.map(d => `
+        <tr>
+          <td>${d.originalName}</td>
+          <td style="font-size:12px">${d.documentType}</td>
+          <td>${d.uploadedBy?.name || '—'}</td>
+          <td style="font-size:12px;color:var(--muted)">${d.serviceRequest?.requestId || '—'}</td>
+          <td style="color:var(--muted);font-size:12px">${formatSize(d.fileSize)}</td>
+          <td><span class="badge ${d.isVerified ? 'badge-green':'badge-orange'}">${d.isVerified ? 'Verified':'Pending'}</span></td>
+          <td style="display:flex;gap:6px;">
+            ${!d.isVerified ? `<button class="btn btn-success btn-sm" onclick="verifyDoc('${d._id}',this)">Verify</button>` : ''}
+            ${d.url ? `<a href="http://localhost:5000${d.url}" target="_blank" class="btn btn-outline btn-sm">View</a>` : ''}
+          </td>
+        </tr>`).join('') || '<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:24px">No documents</td></tr>';
+    } catch (err) { showToast(err.message, 'error'); }
+  }
+
+  async function verifyDoc(id, btn) {
+    btn.disabled = true;
+    try {
+      await apiRequest(`/documents/${id}/verify`, { method: 'PUT' });
+      showToast('Document verified!', 'success');
+      loadAdminDocs();
+    } catch (err) { showToast(err.message, 'error'); btn.disabled = false; }
+  }
+
+  async function loadCitizens() {
+    const search = document.getElementById('citizenSearch')?.value || '';
+    try {
+      const qs = search ? `?search=${encodeURIComponent(search)}` : '';
+      const res = await apiRequest('/citizens' + qs);
+      document.getElementById('citizensBody').innerHTML = (res.data || []).map(c => `
+        <tr>
+          <td>${c.name}</td>
+          <td style="color:var(--muted);font-size:12px">${c.email}</td>
+          <td style="color:var(--muted);font-size:12px">${c.phone || '—'}</td>
+          <td style="color:var(--muted);font-size:12px">${formatDate(c.createdAt)}</td>
+          <td><span class="badge ${c.isActive ? 'badge-green':'badge-red'}">${c.isActive ? 'Active':'Inactive'}</span></td>
+          <td><button class="btn btn-outline btn-sm" onclick="toggleCitizen('${c._id}',this)">${c.isActive ? 'Deactivate':'Activate'}</button></td>
+        </tr>`).join('') || '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:24px">No citizens found</td></tr>';
+    } catch (err) { showToast(err.message, 'error'); }
+  }
+
+  async function toggleCitizen(id, btn) {
+    btn.disabled = true;
+    try {
+      await apiRequest(`/citizens/${id}/toggle-active`, { method: 'PUT' });
+      showToast('Account status updated.', 'success');
+      loadCitizens();
+    } catch (err) { showToast(err.message, 'error'); btn.disabled = false; }
+  }
+
+  function openStatusModal(id, reqId, currentStatus) {
+    document.getElementById('updateReqId').value = id;
+    document.getElementById('statusModalSub').textContent = reqId;
+    document.getElementById('newStatus').value = currentStatus;
+    document.getElementById('officerRemarks').value = '';
+    document.getElementById('statusModal').classList.add('open');
+  }
+
+  async function updateStatus() {
+    const id      = document.getElementById('updateReqId').value;
+    const status  = document.getElementById('newStatus').value;
+    const remarks = document.getElementById('officerRemarks').value.trim();
+    try {
+      await apiRequest(`/requests/${id}/status`, {
+        method: 'PUT',
+        body: JSON.stringify({ status, remarks })
+      });
+      closeModal('statusModal');
+      showToast('Status updated successfully!', 'success');
+      loadDashboard();
+      loadAllRequests();
+    } catch (err) { showToast(err.message, 'error'); }
+  }
+
+  function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+  function closeOnBackdrop(e, id) { if (e.target === document.getElementById(id)) closeModal(id); }
+  function handleLogout() { Auth.clear(); window.location.href = 'login.html'; }
+
+  loadDashboard();
+</script>
+</body>
+</html>

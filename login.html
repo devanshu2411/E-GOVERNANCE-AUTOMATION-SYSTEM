@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login — E-Governance Portal</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background:
+        radial-gradient(ellipse 70% 60% at 15% 20%, rgba(236, 255, 26, 0.614) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 40% at 85% 85%, rgba(251, 255, 0, 0.768) 0%, transparent 55%),
+        var(--navy);
+    }
+
+    .auth-wrapper {
+      display: grid;
+      grid-template-columns: 420px 380px;
+      gap: 0;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: var(--shadow), 0 0 80px rgba(255, 26, 26, 0.541);
+      animation: fadeUp 0.5s ease;
+    }
+
+    /* Left branding panel */
+    .brand-panel {
+      background: linear-gradient(155deg, rgba(26,92,255,0.25) 0%, rgba(0,212,255,0.08) 100%),
+                  var(--navy3);
+      border-right: 1px solid var(--border);
+      padding: 48px 40px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .brand-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 40px;
+    }
+
+    .brand-logo-icon {
+      width: 44px; height: 44px;
+      background: linear-gradient(135deg, var(--blue), var(--cyan));
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px;
+    }
+
+    .brand-logo h1 {
+      font-size: 15px;
+      font-weight: 800;
+      line-height: 1.25;
+      letter-spacing: -0.01em;
+    }
+
+    .brand-logo span {
+      font-size: 10px;
+      color: var(--muted);
+      font-weight: 400;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-family: 'DM Sans', sans-serif;
+      display: block;
+    }
+
+    .brand-tagline {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .brand-tagline h2 {
+      font-size: 26px;
+      font-weight: 800;
+      line-height: 1.2;
+      margin-bottom: 14px;
+    }
+
+    .brand-tagline h2 em {
+      font-style: normal;
+      background: linear-gradient(135deg, var(--cyan), var(--blue));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .brand-tagline p {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .feature-list {
+      margin-top: 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .feature-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 12.5px;
+      color: var(--muted);
+    }
+
+    .feature-item .dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--cyan);
+      flex-shrink: 0;
+    }
+
+    .brand-footer {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 32px;
+    }
+
+    /* Right form panel */
+    .form-panel {
+      background: var(--navy2);
+      padding: 44px 38px;
+    }
+
+    .form-panel h2 {
+      font-size: 22px;
+      margin-bottom: 6px;
+    }
+
+    .form-panel > p {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 28px;
+    }
+
+    .tab-row {
+      display: flex;
+      gap: 0;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 3px;
+      margin-bottom: 26px;
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 8px;
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .tab-btn.active {
+      background: var(--blue);
+      color: #fff;
+      font-weight: 500;
+    }
+
+    .submit-btn {
+      width: 100%;
+      justify-content: center;
+      padding: 12px;
+      font-size: 14px;
+      margin-top: 4px;
+    }
+
+    .divider {
+      text-align: center;
+      color: var(--muted);
+      font-size: 11px;
+      margin: 16px 0;
+      position: relative;
+    }
+
+    .divider::before, .divider::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      width: 38%;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .divider::before { left: 0; }
+    .divider::after  { right: 0; }
+
+    .demo-creds {
+      background: rgba(26,92,255,0.08);
+      border: 1px solid rgba(26,92,255,0.2);
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 11.5px;
+      color: var(--muted);
+      margin-top: 16px;
+    }
+
+    .demo-creds strong { color: var(--cyan); }
+
+    @media (max-width: 860px) {
+      .auth-wrapper { grid-template-columns: 1fr; }
+      .brand-panel  { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="auth-wrapper">
+  <!-- Brand Panel -->
+  <div class="brand-panel">
+    <div>
+      <div class="brand-logo">
+        <div class="brand-logo-icon">🏛️</div>
+        <div>
+          <h1>E-Governance<br>Portal</h1>
+          <span>Municipal Corporation</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="brand-tagline">
+      <h2>Government Services,<br><em>Reimagined</em></h2>
+      <p>Apply for certificates, track your applications, upload documents — all from one unified platform.</p>
+
+      <div class="feature-list">
+        <div class="feature-item"><div class="dot"></div> Real-time application tracking</div>
+        <div class="feature-item"><div class="dot"></div> Secure document upload & management</div>
+        <div class="feature-item"><div class="dot"></div> Automated workflow processing</div>
+        <div class="feature-item"><div class="dot"></div> Transparent status updates</div>
+      </div>
+    </div>
+
+    <div class="brand-footer">© 2026 Municipal E-Governance System. All rights reserved.</div>
+  </div>
+
+  <!-- Form Panel -->
+  <div class="form-panel">
+    <h2>Welcome Back</h2>
+    <p>Sign in to access your service portal</p>
+
+    <div class="tab-row">
+      <button class="tab-btn active" onclick="switchTab('login', this)">Sign In</button>
+      <button class="tab-btn" onclick="switchTab('register', this)">Register</button>
+    </div>
+
+    <!-- Alert -->
+    <div class="alert alert-error" id="authAlert"></div>
+
+    <!-- Login Form -->
+    <div id="loginForm">
+      <div class="form-group">
+        <label>Email Address</label>
+        <input type="email" class="form-control" id="loginEmail" placeholder="you@example.com" autocomplete="email">
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" class="form-control" id="loginPassword" placeholder="••••••••" autocomplete="current-password">
+      </div>
+      <button class="btn btn-primary submit-btn" id="loginBtn" onclick="handleLogin()">
+        Sign In →
+      </button>
+
+      <div class="demo-creds">
+        <strong>Demo credentials:</strong><br>
+        Admin: admin@egov.in / admin123<br>
+        Citizen: citizen@test.com / citizen123
+      </div>
+    </div>
+
+    <!-- Register Form -->
+    <div id="registerForm" style="display:none;">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Full Name</label>
+          <input type="text" class="form-control" id="regName" placeholder="Your full name">
+        </div>
+        <div class="form-group">
+          <label>Phone Number</label>
+          <input type="tel" class="form-control" id="regPhone" placeholder="+91 XXXXX XXXXX">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Email Address</label>
+        <input type="email" class="form-control" id="regEmail" placeholder="you@example.com">
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" class="form-control" id="regPassword" placeholder="At least 6 characters">
+      </div>
+      <div class="form-group">
+        <label>Aadhaar Number (optional)</label>
+        <input type="text" class="form-control" id="regAadhaar" placeholder="XXXX-XXXX-XXXX">
+      </div>
+      <button class="btn btn-primary submit-btn" id="registerBtn" onclick="handleRegister()">
+        Create Account →
+      </button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script src="app.js"></script>
+<script>
+  redirectIfLoggedIn();
+
+  function switchTab(tab, btn) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('loginForm').style.display    = tab === 'login'    ? 'block' : 'none';
+    document.getElementById('registerForm').style.display = tab === 'register' ? 'block' : 'none';
+    document.getElementById('authAlert').classList.remove('show');
+  }
+
+  function showAlert(msg) {
+    const el = document.getElementById('authAlert');
+    el.textContent = msg;
+    el.classList.add('show');
+  }
+
+  function setLoading(btnId, loading) {
+    const btn = document.getElementById(btnId);
+    btn.disabled = loading;
+    btn.innerHTML = loading ? '<span class="loader"></span> Please wait…' : (btnId === 'loginBtn' ? 'Sign In →' : 'Create Account →');
+  }
+
+  async function handleLogin() {
+    const email    = document.getElementById('loginEmail').value.trim();
+    const password = document.getElementById('loginPassword').value;
+    if (!email || !password) return showAlert('Please enter email and password.');
+
+    setLoading('loginBtn', true);
+    try {
+      const data = await apiRequest('/auth/login', {
+        method: 'POST',
+        body: JSON.stringify({ email, password })
+      });
+      Auth.setToken(data.token);
+      Auth.setUser(data.user);
+      showToast('Login successful! Redirecting…', 'success');
+      setTimeout(() => {
+        window.location.href = data.user.role === 'admin' ? 'admin.html' : 'portal.html';
+      }, 800);
+    } catch (err) {
+      showAlert(err.message);
+    } finally {
+      setLoading('loginBtn', false);
+    }
+  }
+
+  async function handleRegister() {
+    const name     = document.getElementById('regName').value.trim();
+    const email    = document.getElementById('regEmail').value.trim();
+    const password = document.getElementById('regPassword').value;
+    const phone    = document.getElementById('regPhone').value.trim();
+    const aadhaar  = document.getElementById('regAadhaar').value.trim();
+
+    if (!name || !email || !password) return showAlert('Name, email and password are required.');
+
+    setLoading('registerBtn', true);
+    try {
+      const data = await apiRequest('/auth/register', {
+        method: 'POST',
+        body: JSON.stringify({ name, email, password, phone, aadhaar })
+      });
+      Auth.setToken(data.token);
+      Auth.setUser(data.user);
+      showToast('Account created! Redirecting…', 'success');
+      setTimeout(() => window.location.href = 'portal.html', 800);
+    } catch (err) {
+      showAlert(err.message);
+    } finally {
+      setLoading('registerBtn', false);
+    }
+  }
+
+  // Allow Enter key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      const active = document.querySelector('.tab-btn.active').textContent;
+      if (active === 'Sign In') handleLogin();
+      else handleRegister();
+    }
+  });
+</script>
+</body>
+</html>
